@@ -14,8 +14,8 @@ import com.echotech.auth.dto.CreatePasswordResponse;
 import com.echotech.auth.dto.OtpGenerationResponse;
 import com.echotech.auth.dto.OtpVerificationRequest;
 import com.echotech.auth.dto.OtpVerificationResponse;
+import com.echotech.auth.dto.ResponseDto;
 import com.echotech.auth.dto.SignInDto;
-import com.echotech.auth.dto.SignInDtoResponse;
 import com.echotech.auth.service.AuthService;
 
 @RestController
@@ -25,10 +25,10 @@ public class AuthController {
 	@Autowired
 	private AuthService authService;
 	
-	@PostMapping("/signIn")
-	public ResponseEntity<SignInDtoResponse> logIn(@RequestBody SignInDto signInDto){
+	@PostMapping({"/logIn", "/signIn"})
+	public ResponseEntity<ResponseDto> logIn(@RequestBody SignInDto signInDto){
 		
-		SignInDtoResponse response = authService.logIn(signInDto);
+		ResponseDto response = authService.logIn(signInDto);
 		
 		return ResponseEntity.ok(response);
 	}

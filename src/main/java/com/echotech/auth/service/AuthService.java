@@ -7,12 +7,12 @@ import com.echotech.auth.dto.CreatePasswordResponse;
 import com.echotech.auth.dto.OtpGenerationResponse;
 import com.echotech.auth.dto.OtpVerificationRequest;
 import com.echotech.auth.dto.OtpVerificationResponse;
+import com.echotech.auth.dto.ResponseDto;
 import com.echotech.auth.dto.SignInDto;
-import com.echotech.auth.dto.SignInDtoResponse;
 
 public interface AuthService {
 	
-	public SignInDtoResponse logIn(SignInDto signInDto);
+	public ResponseDto logIn(SignInDto signInDto);
 
 	public AcntSetupResponse acntSetup(AcntSetupDto acntSetupDto);
 
