@@ -14,8 +14,8 @@ import com.echotech.auth.dto.CreatePasswordResponse;
 import com.echotech.auth.dto.OtpGenerationResponse;
 import com.echotech.auth.dto.OtpVerificationRequest;
 import com.echotech.auth.dto.OtpVerificationResponse;
+import com.echotech.auth.dto.ResponseDto;
 import com.echotech.auth.dto.SignInDto;
-import com.echotech.auth.dto.SignInDtoResponse;
 import com.echotech.auth.service.AuthService;
 
 @RestController
@@ -25,18 +25,18 @@ public class AuthController {
 	@Autowired
 	private AuthService authService;
 	
-	@PostMapping("/signIn")
-	public ResponseEntity<SignInDtoResponse> logIn(@RequestBody SignInDto signInDto){
+	@PostMapping("/logIn")
+	public ResponseEntity<ResponseDto> logIn(@RequestBody SignInDto signInDto){
 		
-		SignInDtoResponse response = authService.logIn(signInDto);
+		ResponseDto response = authService.logIn(signInDto);
 		
 		return ResponseEntity.ok(response);
 	}
 	
 	@PostMapping("/newAcnt")
-	public ResponseEntity<AcntSetupResponse> newAcntSetup(@RequestBody AcntSetupDto acntSetupDto){
+	public ResponseEntity<ResponseDto> newAcntSetup(@RequestBody AcntSetupDto acntSetupDto){
 		
-		AcntSetupResponse response = authService.acntSetup(acntSetupDto);
+		ResponseDto response = authService.acntSetup(acntSetupDto);
 		
 		return ResponseEntity.ok(response);		
 	}
@@ -58,9 +58,11 @@ public class AuthController {
 	}
 	
 	@PostMapping("/createPassword")
-	public ResponseEntity<CreatePasswordResponse> createPassword(@RequestBody CreatePasswordRequest createPasswordRequest){
+	public ResponseEntity<ResponseDto> createPassword(@RequestBody CreatePasswordRequest createPasswordRequest){
 		
-		CreatePasswordResponse response = authService.createPassword(createPasswordRequest);
+		ResponseDto response = authService.createPassword(createPasswordRequest);
+		
+		
 		
 		return ResponseEntity.ok(response);
 	}

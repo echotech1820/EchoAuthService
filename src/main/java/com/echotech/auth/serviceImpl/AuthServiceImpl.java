@@ -17,8 +17,8 @@ import com.echotech.auth.dto.CreatePasswordResponse;
 import com.echotech.auth.dto.OtpGenerationResponse;
 import com.echotech.auth.dto.OtpVerificationRequest;
 import com.echotech.auth.dto.OtpVerificationResponse;
+import com.echotech.auth.dto.ResponseDto;
 import com.echotech.auth.dto.SignInDto;
-import com.echotech.auth.dto.SignInDtoResponse;
 import com.echotech.auth.exception.UserAlreadyExistsException;
 import com.echotech.auth.exception.WrongPasswordException;
 import com.echotech.auth.model.AppUser;
@@ -28,6 +28,7 @@ import com.echotech.auth.repository.OtpVerificationRepository;
 import com.echotech.auth.security.JwtService;
 import com.echotech.auth.security.UserInfoService;
 import com.echotech.auth.service.AuthService;
+import com.echotech.auth.util.UtilityClass;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -50,11 +51,14 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private UserInfoService userInfoService;
     
+//    @Autowired
+    private UtilityClass utilityClass = new UtilityClass(); 
+    
     private final String dummyOtp = "123456";
 
 	@Override
-	public SignInDtoResponse logIn(SignInDto signInDto) {
-		SignInDtoResponse response = new SignInDtoResponse();
+	public ResponseDto logIn(SignInDto signInDto) {
+		ResponseDto response = new ResponseDto();
 
 		Optional<AppUser> optAppUser = appUserRepo.findByUserPhoneNumber(signInDto.getMobileNumber());
 
@@ -62,15 +66,13 @@ public class AuthServiceImpl implements AuthService {
 			AppUser user = optAppUser.get();
 			boolean rightPwd = passwordEncoder.matches(signInDto.getPassword(), user.getUserPassword());
 
-			System.out.println("RIGHT PASSWORD: " + rightPwd);
-
 			if (rightPwd) {
 
 				UserDetails userDetails = userInfoService.loadUserByUsername(user.getUserPhoneNumber());
 
 				String jwtToken = jwtService.generateToken(userDetails);
-				response.setStatusCode("SUCCESS");
-				response.setMessage(jwtToken);
+				response.setStatus(utilityClass.successCode);
+				response.setData(jwtToken);
 			} else {
 				throw new WrongPasswordException("Password Does Not Match");
 			}
@@ -82,8 +84,8 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public AcntSetupResponse acntSetup(AcntSetupDto acntSetupDto) {
-		AcntSetupResponse response = new AcntSetupResponse();
+	public ResponseDto acntSetup(AcntSetupDto acntSetupDto) {
+		ResponseDto response = new ResponseDto();
 		
 		Optional<AppUser> optAppUser = appUserRepo.findByUserPhoneNumber(acntSetupDto.getMobileNumber());
 		
@@ -96,9 +98,9 @@ public class AuthServiceImpl implements AuthService {
 			
 			user = appUserRepo.save(user);
 			
-			response.setStatusCode("SUCCESS");
+			response.setStatus(utilityClass.successCode);
 			response.setMessage("User created successfully");
-			response.setUserId(user.getUserSysId());
+			response.setData(user.getUserSysId());
 			
 		}else {
 			throw new UserAlreadyExistsException("User with the given mobile number already exists");
@@ -202,9 +204,36 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public CreatePasswordResponse createPassword(CreatePasswordRequest createPasswordRequest) {
-		CreatePasswordResponse response = new CreatePasswordResponse();
-		
+	public ResponseDto createPassword(CreatePasswordRequest createPasswordRequest) {
+		ResponseDto response = new ResponseDto();
+
+		if (createPasswordRequest.getUserId() != null) {
+			if (createPasswordRequest.getPassword().equals(createPasswordRequest.getConfirmPassword())) {
+				Optional<AppUser> optAppUser = appUserRepo.findById(createPasswordRequest.getUserId());
+
+				if (optAppUser.isPresent()) {
+					AppUser user = optAppUser.get();
+
+					user.setUserPassword(passwordEncoder.encode(createPasswordRequest.getPassword()));
+					user.setUserUpdatedAt(LocalDateTime.now());
+
+					appUserRepo.save(user);
+
+					response.setStatus(utilityClass.successCode);
+					response.setMessage("Password Created Successfully");
+
+				} else {
+					throw new UserAlreadyExistsException("No user exists for the given ID");
+				}
+			} else {
+				response.setStatus(utilityClass.failureCode);
+				response.setMessage("Both the given passowrds should be same");
+			}
+		} else {
+			response.setStatus(utilityClass.failureCode);
+			response.setMessage("The User ID is invalid");
+		}
+
 		return response;
 	}
 

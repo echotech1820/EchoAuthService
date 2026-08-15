@@ -6,27 +6,33 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.echotech.auth.dto.ErrorResponse;
+import com.echotech.auth.dto.ResponseDto;
+import com.echotech.auth.util.UtilityClass;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 	
+	private UtilityClass utilityClass = new UtilityClass();
+	
     @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponse> handleUserExists(UserAlreadyExistsException ex) {
+    public ResponseEntity<ResponseDto> handleUserExists(UserAlreadyExistsException ex) {
 
-        ErrorResponse error = new ErrorResponse(
-                "USER_ALREADY_EXISTS",
-                ex.getMessage());
+    	ResponseDto error = new ResponseDto(
+                utilityClass.failureCode,
+                ex.getMessage(), 
+                null);
 
         return ResponseEntity.status(HttpStatus.CONFLICT)
                              .body(error);
     }
     
     @ExceptionHandler(WrongPasswordException.class)
-    public ResponseEntity<ErrorResponse> handleWrongPwd(WrongPasswordException ex) {
+    public ResponseEntity<ResponseDto> handleWrongPwd(WrongPasswordException ex) {
 
-        ErrorResponse error = new ErrorResponse(
-                "PASS_WORD_WRONG",
-                ex.getMessage());
+    	ResponseDto error = new ResponseDto(
+                utilityClass.failureCode,
+                ex.getMessage(), 
+                null);
 
         return ResponseEntity.status(HttpStatus.CONFLICT)
                              .body(error);
