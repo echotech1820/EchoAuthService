@@ -17,9 +17,10 @@ import com.echotech.auth.dto.CreatePasswordResponse;
 import com.echotech.auth.dto.OtpGenerationResponse;
 import com.echotech.auth.dto.OtpVerificationRequest;
 import com.echotech.auth.dto.OtpVerificationResponse;
+import com.echotech.auth.dto.ResponseDto;
 import com.echotech.auth.dto.SignInDto;
-import com.echotech.auth.dto.SignInDtoResponse;
 import com.echotech.auth.exception.UserAlreadyExistsException;
+import com.echotech.auth.exception.UserDoesNotExistException;
 import com.echotech.auth.exception.WrongPasswordException;
 import com.echotech.auth.model.AppUser;
 import com.echotech.auth.model.OtpVerification;
@@ -28,6 +29,7 @@ import com.echotech.auth.repository.OtpVerificationRepository;
 import com.echotech.auth.security.JwtService;
 import com.echotech.auth.security.UserInfoService;
 import com.echotech.auth.service.AuthService;
+import com.echotech.auth.util.UtilityClass;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -49,33 +51,39 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private UserInfoService userInfoService;
+
+    @Autowired
+    private UtilityClass utilityClass;
     
     private final String dummyOtp = "123456";
 
 	@Override
-	public SignInDtoResponse logIn(SignInDto signInDto) {
-		SignInDtoResponse response = new SignInDtoResponse();
+	public ResponseDto logIn(SignInDto signInDto) {
+		ResponseDto response = new ResponseDto();
 
 		Optional<AppUser> optAppUser = appUserRepo.findByUserPhoneNumber(signInDto.getMobileNumber());
 
 		if (optAppUser.isPresent()) {
 			AppUser user = optAppUser.get();
-			boolean rightPwd = passwordEncoder.matches(signInDto.getPassword(), user.getUserPassword());
 
-			System.out.println("RIGHT PASSWORD: " + rightPwd);
+			if (user.getUserPassword() == null || user.getUserPassword().isBlank()) {
+				throw new WrongPasswordException("Password is not set. Please complete account setup.");
+			}
+
+			boolean rightPwd = passwordEncoder.matches(signInDto.getPassword(), user.getUserPassword());
 
 			if (rightPwd) {
 
 				UserDetails userDetails = userInfoService.loadUserByUsername(user.getUserPhoneNumber());
 
 				String jwtToken = jwtService.generateToken(userDetails);
-				response.setStatusCode("SUCCESS");
-				response.setMessage(jwtToken);
+				response.setStatus(utilityClass.successCode);
+				response.setData(jwtToken);
 			} else {
 				throw new WrongPasswordException("Password Does Not Match");
 			}
 		} else {
-			throw new UserAlreadyExistsException("User Does Not Exist");
+			throw new UserDoesNotExistException("User Does Not Exist");
 		}
 
 		return response;
@@ -204,7 +212,22 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public CreatePasswordResponse createPassword(CreatePasswordRequest createPasswordRequest) {
 		CreatePasswordResponse response = new CreatePasswordResponse();
-		
+
+		if (createPasswordRequest.getPassword() == null
+				|| !createPasswordRequest.getPassword().equals(createPasswordRequest.getConfirmPassword())) {
+			throw new WrongPasswordException("Password and confirm password do not match");
+		}
+
+		AppUser user = appUserRepo.findByUserPhoneNumber(createPasswordRequest.getMobileNumber())
+				.orElseThrow(() -> new UserDoesNotExistException("User Does Not Exist"));
+
+		user.setUserPassword(passwordEncoder.encode(createPasswordRequest.getPassword()));
+		user.setUserFirstLogin("N");
+		user.setUserUpdatedAt(LocalDateTime.now());
+		appUserRepo.save(user);
+
+		response.setStatusCode(utilityClass.successCode);
+		response.setMessage("Password created successfully");
 		return response;
 	}
 

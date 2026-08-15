@@ -28,7 +28,18 @@ public class GlobalExceptionHandler {
                 "PASS_WORD_WRONG",
                 ex.getMessage());
 
-        return ResponseEntity.status(HttpStatus.CONFLICT)
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                             .body(error);
+    }
+
+    @ExceptionHandler(UserDoesNotExistException.class)
+    public ResponseEntity<ErrorResponse> handleUserDoesNotExist(UserDoesNotExistException ex) {
+
+        ErrorResponse error = new ErrorResponse(
+                "USER_DOES_NOT_EXIST",
+                ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                              .body(error);
     }
 
