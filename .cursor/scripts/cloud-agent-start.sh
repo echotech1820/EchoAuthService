@@ -1,7 +1,27 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+sudo mkdir -p /var/run/mysqld /var/log/mysql /var/lib/mysql
+sudo chown mysql:mysql /var/run/mysqld /var/log/mysql /var/lib/mysql
+
+if [ ! -d /var/lib/mysql/mysql ]; then
+  sudo mysqld --initialize-insecure --user=mysql --datadir=/var/lib/mysql
+fi
+
 if ! pgrep -x mysqld >/dev/null 2>&1; then
+  sudo mysqld_safe --datadir=/var/lib/mysql &
+  for _ in $(seq 1 30); do
+    if sudo mysqladmin ping --silent 2>/dev/null; then
+      break
+    fi
+    sleep 1
+  done
+fi
+
+if ! sudo mysqladmin ping --silent 2>/dev/null; then
+  echo "MySQL failed to start; reinitializing datadir" >&2
+  sudo rm -rf /var/lib/mysql/*
+  sudo mysqld --initialize-insecure --user=mysql --datadir=/var/lib/mysql
   sudo mysqld_safe --datadir=/var/lib/mysql &
   for _ in $(seq 1 30); do
     if sudo mysqladmin ping --silent 2>/dev/null; then

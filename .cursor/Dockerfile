@@ -3,7 +3,9 @@ FROM ubuntu:24.04
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
        git curl ca-certificates openjdk-21-jdk mysql-server sudo \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /var/run/mysqld /var/log/mysql /var/lib/mysql \
+    && chown mysql:mysql /var/run/mysqld /var/log/mysql /var/lib/mysql
 
 RUN useradd -m -s /bin/bash ubuntu \
     && usermod -aG sudo ubuntu \
