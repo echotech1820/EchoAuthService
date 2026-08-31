@@ -1,0 +1,17 @@
+{
+  "name": "EchoAuthService",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+  "user": "ubuntu",
+  "install": ".cursor/scripts/cloud-agent-install.sh",
+  "start": ".cursor/scripts/cloud-agent-start.sh",
+  "terminals": [
+    {
+      "name": "auth-api",
+      "command": ".cursor/scripts/run-dev-server.sh"
+    }
+  ],
+  "ports": [8080]
+}
