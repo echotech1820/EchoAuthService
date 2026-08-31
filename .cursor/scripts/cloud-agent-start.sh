@@ -18,11 +18,15 @@ start_mysql() {
   sudo mysqladmin ping --silent 2>/dev/null
 }
 
-if ! start_mysql; then
+reset_mysql_datadir() {
   sudo mysqladmin shutdown --silent 2>/dev/null || true
   sleep 2
-  sudo rm -rf /var/lib/mysql/*
+  sudo bash -c 'rm -rf /var/lib/mysql/*'
   sudo mysqld --initialize-insecure --user=mysql --datadir=/var/lib/mysql
+}
+
+if ! start_mysql; then
+  reset_mysql_datadir
   start_mysql
 fi
 
