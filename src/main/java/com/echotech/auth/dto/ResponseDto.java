@@ -9,7 +9,7 @@ public class ResponseDto {
 	
 	private String message;
 	
-	private Object Data;
+	private Object data;
 
 	public String getStatus() {
 		return status;
@@ -28,18 +28,18 @@ public class ResponseDto {
 	}
 
 	public Object getData() {
-		return Data;
+		return data;
 	}
 
 	public void setData(Object data) {
-		Data = data;
+		this.data = data;
 	}
 
 	public ResponseDto(String status, String message, Object data) {
 		super();
 		this.status = status;
 		this.message = message;
-		Data = data;
+		this.data = data;
 	}
 
 	public ResponseDto() {
