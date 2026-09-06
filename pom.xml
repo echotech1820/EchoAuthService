@@ -46,6 +46,13 @@
     		<artifactId>mysql-connector-j</artifactId>
     		<scope>runtime</scope>
 		</dependency>
+
+		<!-- Cloud SQL Java Connector (JDBC socket factory) -->
+		<dependency>
+			<groupId>com.google.cloud.sql</groupId>
+			<artifactId>mysql-socket-factory-connector-j-8</artifactId>
+			<version>1.29.0</version>
+		</dependency>
 		
 		<dependency>
     		<groupId>org.springframework.boot</groupId>
@@ -86,6 +93,12 @@
     		<artifactId>jjwt-jackson</artifactId>
     		<version>0.12.5</version>
     		<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
