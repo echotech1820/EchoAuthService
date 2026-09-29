@@ -22,4 +22,5 @@ public interface AuthService {
 
 	public ResponseDto createPassword(CreatePasswordRequest createPasswordRequest);
 
+	public ResponseDto verifyUserPhoneNumber(String userPhoneNumber);
 }
