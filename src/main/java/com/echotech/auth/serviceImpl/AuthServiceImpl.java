@@ -237,4 +237,20 @@ public class AuthServiceImpl implements AuthService {
 		return response;
 	}
 
+	@Override
+	public ResponseDto verifyUserPhoneNumber(String userPhoneNumber) {
+		ResponseDto response = new ResponseDto();
+		Optional<AppUser> optAppUser = appUserRepo.findByUserPhoneNumber(userPhoneNumber);
+
+		if (optAppUser.isPresent()) {
+			response.setStatus(utilityClass.successCode);
+			response.setMessage("User already exists");
+		} else {
+			response.setStatus(utilityClass.failureCode);
+			response.setMessage("User does not exist");
+		}
+
+		return response;
+	}
+
 }

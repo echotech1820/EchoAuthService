@@ -17,6 +17,7 @@ import com.echotech.auth.dto.OtpVerificationResponse;
 import com.echotech.auth.dto.ResponseDto;
 import com.echotech.auth.dto.SignInDto;
 import com.echotech.auth.service.AuthService;
+import com.echotech.auth.dto.VerifyUserPhoneNumberRequestDto;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -64,6 +65,12 @@ public class AuthController {
 		
 		
 		
+		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping("/verifyUserPhoneNumber")
+	public ResponseEntity<ResponseDto> verifyUserPhoneNumber(@RequestBody VerifyUserPhoneNumberRequestDto verifyUserPhoneNumberRequestDto){
+		ResponseDto response = authService.verifyUserPhoneNumber(verifyUserPhoneNumberRequestDto.getUserPhoneNumber());
 		return ResponseEntity.ok(response);
 	}
 

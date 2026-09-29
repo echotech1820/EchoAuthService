@@ -5,7 +5,7 @@ import javax.sql.DataSource;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-public class ConnectorConnectionPoolFactory extends ConnectionPoolFactory {
+public class ConnectorConnectionPoolFactory {
 
   // Note: Saving credentials in environment variables is convenient, but not
   // secure - consider a more secure solution such as
@@ -13,10 +13,9 @@ public class ConnectorConnectionPoolFactory extends ConnectionPoolFactory {
   // keep secrets safe.
   private static final String INSTANCE_CONNECTION_NAME =
       System.getenv("INSTANCE_CONNECTION_NAME");
-  private static final String INSTANCE_UNIX_SOCKET = System.getenv("INSTANCE_UNIX_SOCKET");
-  private static final String DB_USER = System.getenv("echoauthservice");
-  private static final String DB_PASS = System.getenv("3ch0tech26!");
-  private static final String DB_NAME = System.getenv("echoauthdb");
+  private static final String DB_USER = System.getenv("DB_USER");
+  private static final String DB_PASS = System.getenv("DB_PASS");
+  private static final String DB_NAME = System.getenv("DB_NAME");
 
   public static DataSource createConnectionPool() {
     // The configuration object specifies behaviors for the connection pool.
@@ -29,9 +28,9 @@ public class ConnectorConnectionPoolFactory extends ConnectionPoolFactory {
     // https://github.com/GoogleCloudPlatform/cloud-sql-jdbc-socket-factory#creating-the-jdbc-url
 
     // Configure which instance and what database user to connect with.
-    config.setJdbcUrl(String.format("jdbc:mysql:///%s", "echoauthdb"));
-    config.setUsername("echoauthservice"); // e.g. "root", "mysql"
-    config.setPassword("3ch0tech26!"); // e.g. "my-password"
+    config.setJdbcUrl(String.format("jdbc:mysql:///%s", DB_NAME));
+    config.setUsername(DB_USER); // e.g. "root", "mysql"
+    config.setPassword(DB_PASS); // e.g. "my-password"
 
     config.addDataSourceProperty("socketFactory", "com.google.cloud.sql.mysql.SocketFactory");
     config.addDataSourceProperty("cloudSqlInstance", INSTANCE_CONNECTION_NAME);
