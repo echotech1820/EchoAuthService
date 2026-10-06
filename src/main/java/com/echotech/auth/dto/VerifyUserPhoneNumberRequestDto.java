@@ -1,12 +1,15 @@
 package com.echotech.auth.dto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Getter
-@Setter 
-@NoArgsConstructor 
 public class VerifyUserPhoneNumberRequestDto {
-    private String userPhoneNumber;
+
+	private String userPhoneNumber;
+
+	public String getUserPhoneNumber() {
+		return userPhoneNumber;
+	}
+
+	public void setUserPhoneNumber(String userPhoneNumber) {
+		this.userPhoneNumber = userPhoneNumber;
+	}
+
 }
